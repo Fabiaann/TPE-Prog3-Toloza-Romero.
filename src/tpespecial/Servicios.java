@@ -11,7 +11,8 @@ public class Servicios {
 	
 	List<Paquete> paquetes = new ArrayList<>();
 	List<Camion> camiones = new ArrayList<>();
-	HashMap<Boolean, List<Paquete>> booleanos = new HashMap<>();
+	HashMap<String, Paquete> paquetesPorCodigo = new HashMap<>();
+	HashMap<Boolean, List<Paquete>> paquetesAlimento = new HashMap<>();
 	TreeMap<Integer, Paquete> arbolNivelDeUrgencia = new TreeMap<>();
 	
 	
@@ -32,14 +33,6 @@ public class Servicios {
 	 
 	    } 
 	 
-	    public List<Paquete> getPaquetes() {
-			return paquetes;
-		}
-
-		public List<Camion> getCamiones() {
-			return camiones;
-		}
-
 		private void cargaDeDatos(String informacion, char tipo) {
 			
 	    	
@@ -60,7 +53,9 @@ public class Servicios {
 					 Paquete p = new Paquete(row);
 						      
 						paquetes.add(p);
-							
+						//cargamos los paquetes a los maps.
+						paquetesPorCodigo.put(p.getCodigoIndentificador(), p);
+						paquetesAlimento.get(p.isContieneAlimento()).add(p);
 						
 					}
 					if(tipo=='c')  //si tipo es camiones, cargo los camiones 
@@ -98,16 +93,32 @@ public class Servicios {
 			
 		}
 
-		/* 
-	     * Expresar la complejidad temporal del servicio 1. 
+		/*  
+	     * Su complejidad computacional es O(1) 
 	     */ 
-	    public void /*Paquete */ servicio1(String codigoPaquete) { } 
+		public Paquete servicio1(String codigoPaquete) {
+	        if (codigoPaquete == null) {
+	            return null;
+	        }
+	        return buscarPaquetePorCodigo(codigoPaquete);
+	    }
+
+	   
+	    private Paquete buscarPaquetePorCodigo(String codigoPaquete) {
+	        return paquetesPorCodigo.get(codigoPaquete);
+	    }
 	
 	    /* 
 	     * Expresar la complejidad temporal del servicio 2. 
 	     */ 
-	    public void /*List<Paquete> */servicio2(boolean contieneAlimentos) { 
-	} 
+	    public List<Paquete> servicio2(boolean contieneAlimentos) {
+	        return buscarPaquetesPorAlimentos(contieneAlimentos);
+	    }
+
+	   
+	    private List<Paquete> buscarPaquetesPorAlimentos(boolean contieneAlimentos) {
+	        return paquetesAlimento.getOrDefault(contieneAlimentos, new ArrayList<>());
+	    }
 	 
 	    /* 
 	     * Expresar la complejidad temporal del servicio 3. 
