@@ -24,4 +24,8 @@ public class Solucion {
 		return asignaciones;
 	}
     
+	@Override
+	public String toString() {
+	    return "Asignaciones: " + asignaciones +  "\nPeso no  asignado: " + pesoNoAsignado;
+	}
 }

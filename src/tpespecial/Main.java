@@ -13,10 +13,8 @@ public class Main {
 		
 	
 		
-		//PRUEBA DE QUE FUNCIONA EL "LECTOR DE CSV"
-		System.out.println(s.getCamiones());
-	     System.out.println(s.getPaquetes());		
-		//BORRAR LOS GETERS DE LA CLASS SERVICIO.....!!!!!!!!!
+		System.out.println(s.Greddy());
+	
 		
  
 
