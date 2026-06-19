@@ -17,10 +17,12 @@ public class Servicios {
 	HashMap<Boolean, List<Paquete>> paquetesAlimento = new HashMap<>();
 	TreeMap<Integer, List<Paquete>> arbolNivelDeUrgencia = new TreeMap<>();
 
-	// Completar con las estructuras y métodos privados que se requieran.
+	// 
 
 	/*
 	 * Expresar la complejidad temporal del constructor.
+	 * 
+	 *  * Complejidad: O(n) :  n representa la cantidad total de registros  de los  camiones y los paquetes.
 	 */
 
 	public Servicios(String pathCamiones, String pathPaquetes) {
@@ -33,6 +35,19 @@ public class Servicios {
 
 	}
 
+	
+	
+	
+	/*Complejidad Computacional De carga De Datos:
+	 * 
+	 * O(k) : para la carga de camiones, k seria la cantidad de lineas que tiene le archivo csv.
+	 * 
+	 * O(k log p) : Para la carga de paquetes, k es la cantidad de lineas que tiene el archivo csv.P es la cantidad de paquetes que ya fueron cargados  en el arbol.
+	 * 
+	 * 
+	 * */
+	
+	
 	private void cargaDeDatos(String informacion, char tipo) {
 
 		BufferedReader reader = null;
@@ -48,10 +63,16 @@ public class Servicios {
 
 				String[] row = line.split(";");
 
-				if (tipo == 'p') { // Si el tipo es de paquetes, joya cargo los paquetes
+				if (tipo == 'p') { // Si el tipo es de paquetes, cargo los paquetes
 					Paquete p = new Paquete(row);
 
 					paquetes.add(p);
+					 if (!arbolNivelDeUrgencia.containsKey(p.nivelDeUrgencia)) {
+		                    arbolNivelDeUrgencia.put(p.nivelDeUrgencia, new ArrayList<>()); 
+		                }
+		                arbolNivelDeUrgencia.get(p.nivelDeUrgencia).add(p);
+					
+					
 					// cargamos los paquetes a los maps.
 					paquetesPorCodigo.put(p.getCodigoIndentificador(), p);
 					paquetesAlimento.get(p.isContieneAlimento()).add(p);
@@ -112,30 +133,13 @@ public class Servicios {
 	}
 
 	/*
-	 * con complejidad O(log n + k) la k representa la cantidad de paquetes que hay
-	 * en el rango determinado.
+	 * con complejidad O(log n + k) 
+	 * la k representa la cantidad de paquetes que hay en el rango determinado.
+	 * log n representa  la búsqueda del rango en el TreeMap.
 	 */
 	public List<Paquete> servicio3(int urgenciaMinima, int urgenciaMaxima) {
-		cargarArbolPorUrgencia();
-		return paquetesPorUrgencia(urgenciaMinima, urgenciaMaxima);
-
-	}
-
-	private void cargarArbolPorUrgencia() {
-
-		for (Paquete p : paquetes) {
-
-			if (!arbolNivelDeUrgencia.containsKey(p.nivelDeUrgencia)) {
-				arbolNivelDeUrgencia.put(p.nivelDeUrgencia, new ArrayList<>());
-			}
-			arbolNivelDeUrgencia.get(p.nivelDeUrgencia).add(p);
-
-		}
-
-	}
-
-	private List<Paquete> paquetesPorUrgencia(int urgenciaMinima, int urgenciaMaxima) {
-
+		
+		
 		List<Paquete> paquetesEnUrgencia = new ArrayList<>();
 
 		NavigableMap<Integer, List<Paquete>> rango = arbolNivelDeUrgencia.subMap(urgenciaMinima, true, urgenciaMaxima,
@@ -146,8 +150,14 @@ public class Servicios {
 		}
 
 		return paquetesEnUrgencia;
+		
+		
 
 	}
+
+	
+
+
 
 	/*
 	 * Estrategia Backtracking: Exploramos recursivamente la asignación de cada
@@ -159,6 +169,7 @@ public class Servicios {
 		List<Paquete> paqs = new ArrayList<>(paquetes);
 		List<Camion> cams = new ArrayList<>(camiones);
 
+		int[] candidatosConsiderados = new int[1];
 		Float[] capacidadesRestantes = new Float[cams.size()];
 		for (int i = 0; i < cams.size(); i++) {
 			capacidadesRestantes[i] = cams.get(i).getCapacidadMaxima();
@@ -170,12 +181,13 @@ public class Servicios {
 		int[] asignacionActual = new int[paqs.size()]; // -1 = no asignado
 		Arrays.fill(asignacionActual, -1);
 
-		backtrack(0, paqs, cams, capacidadesRestantes, 0, mejor, asignacionActual);
+		backtrack(0, paqs, cams, capacidadesRestantes, 0, mejor, asignacionActual, candidatosConsiderados);
+		mejor.setCandidatoConsiderados(candidatosConsiderados[0]);
 		return mejor;
 	}
 
 	private void backtrack(int index, List<Paquete> paqs, List<Camion> cams, Float[] capRest,
-			float pesoNoAsignadoActual, Solucion mejor, int[] asignacionActual) {
+			float pesoNoAsignadoActual, Solucion mejor, int[] asignacionActual, int [] candidatosConsiderados) {
 
 		if (index == paqs.size()) {
 			if (pesoNoAsignadoActual < mejor.getPesoNoAsignado()) {
@@ -205,6 +217,7 @@ public class Servicios {
 
 		// Probar asignar a cada camión
 		for (int c = 0; c < cams.size(); c++) {
+			candidatosConsiderados[0]++;
 			Camion cam = cams.get(c);
 			if (p.isContieneAlimento() && !cam.isEstaRefrigerado())
 				continue;
@@ -213,7 +226,7 @@ public class Servicios {
 				capRest[c] -= p.getPesoEnKg();
 				asignacionActual[index] = c;
 
-				backtrack(index + 1, paqs, cams, capRest, pesoNoAsignadoActual, mejor, asignacionActual);
+				backtrack(index + 1, paqs, cams, capRest, pesoNoAsignadoActual, mejor, asignacionActual, candidatosConsiderados);
 
 				// Backtrack
 				capRest[c] += p.getPesoEnKg();
@@ -222,12 +235,30 @@ public class Servicios {
 		}
 	}
 
-	// GREDDYYY
+	
+	/* 
+	* <<Breve explicación de la estrategia de resolución>> 
+	* 
+	* Nuestra estrategia fue  ordenar  los paquetes de mayor a menor peso.
+	* Para cada paqutet, buscamos el camion donde entra (capacidad y refrigeracion) y que le deje menos espacio libre. 
+	* Si no entra en ningun camion, queda sin asignar. 
+	*  
+	*  
+	* COMPLEJIDAD DEL GREEDY:
+	* 
+	* O(n log n + n·m)  n:  es la cantidad de paquetes.
+	* 					m: 	es la cantidad de camiones.
+	* 					n*m: Es por el doble for. 
+	* 
+	*/
 
-	public Solucion Greddy() {
+	public Solucion Greedy() {
 
 		Solucion solucion = new Solucion(camiones.size());
 
+		 int candidatosConsiderados = 0; 
+		
+		
 		double[] capacidadRestante = new double[camiones.size()];
 		for (int i = 0; i < camiones.size(); i++) {
 			capacidadRestante[i] = camiones.get(i).getCapacidadMaxima();
@@ -237,21 +268,23 @@ public class Servicios {
 
 		for (Paquete p : paquetes) {
 
-			Camion mejor = null;
+			
 			int mejorIndex = -1;
 			double mejorEspacio = Double.MAX_VALUE;
 
 			for (int i = 0; i < camiones.size(); i++) {
 
 				Camion c = camiones.get(i);
+				 candidatosConsiderados++;
 
 				if (esFactible(c, p, capacidadRestante[i])) {
 
-					double espacio = c.getCapacidadMaxima() - p.getPesoEnKg();
+				
+					double espacio = capacidadRestante[i] - p.getPesoEnKg();
 
 					if (espacio < mejorEspacio) {
 						mejorEspacio = espacio;
-						mejor = c;
+				
 						mejorIndex = i;
 					}
 				}
@@ -267,12 +300,22 @@ public class Servicios {
 			}
 
 		}
-		for (int i = 0; i < solucion.getAsignaciones().size(); i++) {
-			System.out.println("Camion " + i + ": " + solucion.getAsignaciones().get(i).size());
-		}
+		
+		
+		solucion.setCandidatoConsiderados(candidatosConsiderados); 
 		return solucion;
 	}
 
+	
+	
+	
+	/* Complejidad Computacional de Esfactible: 
+	 * 
+	 * O(1), por que solo compara cosas simpless.
+	 * 
+	 */
+	
+	
 	private boolean esFactible(Camion c, Paquete p, double capacidadRestante) {
 
 		if (capacidadRestante < p.getPesoEnKg()) {

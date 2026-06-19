@@ -13,8 +13,13 @@ public class Main {
 		
 	
 		
-		System.out.println(s.Greddy());
-	
+		//System.out.println(s.Greedy());
+		//System.out.println(s.backtracking());
+		
+		
+		//System.out.println(s.servicio1("P002"));
+		//System.out.println(s.servicio2(false));
+		//System.out.println(s.servicio3(0,100));
 		
  
 
