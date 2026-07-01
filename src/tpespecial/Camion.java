@@ -6,6 +6,7 @@ public class Camion {
 	String patente;
 	boolean estaRefrigerado;
 	Float capacidadMaxima;
+	Float pesoNeto;
 	
 	public Camion(String[] row) {
 		
@@ -19,6 +20,8 @@ public class Camion {
 		}
 		
 		this.capacidadMaxima = Float.parseFloat(row[3]);
+		
+		this.pesoNeto = (float) 0.0;
 	}
 	
 	
@@ -40,12 +43,21 @@ public class Camion {
 	public Float getCapacidadMaxima() {
 		return capacidadMaxima;
 	}
+	public Float getPesoNeto() {
+		return pesoNeto;
+	}
 
 
 	@Override
 	public String toString() {
 		return "Camiones [idUnico=" + idUnico + ", patente=" + patente + ", estaRefrigerado=" + estaRefrigerado
 				+ ", capacidadMaxima=" + capacidadMaxima+ "]";
+	}
+
+
+	public void setPesoNeto(float f) {
+		this.pesoNeto=f;
+		
 	}
 	
 

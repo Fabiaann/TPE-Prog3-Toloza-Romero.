@@ -3,6 +3,9 @@ package tpespecial;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Solucion {
     private List<List<Paquete>> asignaciones; // una lista por camión
     private float pesoNoAsignado;
@@ -13,7 +16,7 @@ public class Solucion {
         pesoNoAsignado = 0;
     }
 
-	public double getPesoNoAsignado() {
+	public Float getPesoNoAsignado() {
 		return pesoNoAsignado;
 	}
 

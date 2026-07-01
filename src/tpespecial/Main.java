@@ -1,11 +1,12 @@
 package tpespecial;
 
+import java.io.File;
 public class Main {
 
 	public static void main(String[] args) {
 		
-		String archivosCamiones = "C:\\Users\\s7\\Desktop\\TPE(Prog3) Romero-Toloza\\TPE_Prog3\\datos\\camiones.csv";
-		String archivosPaquetes = "C:\\Users\\s7\\Desktop\\TPE(Prog3) Romero-Toloza\\TPE_Prog3\\datos\\paquetes.csv";
+		String archivosCamiones = "datos" + File.separator + "camiones.csv";
+		String archivosPaquetes = "datos" + File.separator + "paquetes.csv";
 		Servicios s = new Servicios(archivosCamiones, archivosPaquetes);
 		
 		
@@ -13,7 +14,7 @@ public class Main {
 		
 	
 		
-		//System.out.println(s.Greedy());
+        //System.out.println(s.Greedy());
 		//System.out.println(s.backtracking());
 		
 		
@@ -26,3 +27,4 @@ public class Main {
 	}
 
 }
+
